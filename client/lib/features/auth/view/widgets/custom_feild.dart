@@ -2,7 +2,13 @@ import 'package:flutter/material.dart';
 
 class CustomFeild extends StatefulWidget {
   final String hintText;
-  const CustomFeild({super.key, required this.hintText});
+  final TextEditingController controller;
+  final bool isObscrureText;
+  const CustomFeild(
+      {super.key,
+      required this.hintText,
+      required this.controller,
+      this.isObscrureText = false});
 
   @override
   State<CustomFeild> createState() => _CustomFeildState();
@@ -12,9 +18,11 @@ class _CustomFeildState extends State<CustomFeild> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(
+      controller: widget.controller,
       decoration: InputDecoration(
-        hintText:  widget.hintText, 
+        hintText: widget.hintText,
       ),
+      obscureText: widget.isObscrureText,
     );
   }
 }

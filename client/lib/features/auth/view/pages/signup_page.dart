@@ -1,3 +1,4 @@
+import 'package:client/core/theme/app_pallete.dart';
 import 'package:client/features/auth/view/widgets/client/lib/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:client/features/auth/view/widgets/custom_feild.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,18 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final nameController = TextEditingController();
+  final emialController = TextEditingController();
+  final passwordController = TextEditingController();
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    nameController.dispose();
+    emialController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -28,21 +41,41 @@ class _SignupPageState extends State<SignupPage> {
             ),
             CustomFeild(
               hintText: 'Name',
+              controller: nameController,
             ),
             const SizedBox(
               height: 15,
             ),
-            CustomFeild(hintText: 'Email'),
+            CustomFeild(
+              hintText: 'Email',
+              controller: emialController,
+            ),
             const SizedBox(
               height: 15,
             ),
             CustomFeild(
               hintText: 'Password',
+              controller: passwordController,
+              isObscrureText: true,
             ),
             const SizedBox(
               height: 20,
             ),
             AuthGradientButton(),
+            const SizedBox(
+              height: 20,
+            ),
+            RichText(
+                text: TextSpan(
+              text: 'Already have an account? ',
+              style: Theme.of(context).textTheme.titleMedium,
+              children: [
+                TextSpan(
+                    text: 'Sign in',
+                    style: TextStyle(
+                        color: Pallete.gradient2, fontWeight: FontWeight.bold)),
+              ],
+            ))
           ],
         ),
       ),
