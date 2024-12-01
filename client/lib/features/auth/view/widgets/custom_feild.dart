@@ -22,6 +22,12 @@ class _CustomFeildState extends State<CustomFeild> {
       decoration: InputDecoration(
         hintText: widget.hintText,
       ),
+      validator: (val) {
+        if (val!.trim().isEmpty) {
+          return "${widget.hintText} is missing!";
+        }
+        return null;
+      },
       obscureText: widget.isObscrureText,
     );
   }
