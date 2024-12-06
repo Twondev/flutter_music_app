@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 
-class CustomFeild extends StatefulWidget {
+class CustomField extends StatefulWidget {
   final String hintText;
   final TextEditingController controller;
   final bool isObscrureText;
-  const CustomFeild(
+  const CustomField(
       {super.key,
       required this.hintText,
       required this.controller,
       this.isObscrureText = false});
 
   @override
-  State<CustomFeild> createState() => _CustomFeildState();
+  State<CustomField> createState() => _CustomFieldState();
 }
 
-class _CustomFeildState extends State<CustomFeild> {
+class _CustomFieldState extends State<CustomField> {
   @override
   Widget build(BuildContext context) {
     return TextFormField(

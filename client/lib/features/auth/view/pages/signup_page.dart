@@ -1,9 +1,10 @@
 import 'package:client/core/theme/app_pallete.dart';
 import 'package:client/features/auth/repositories/auth_remote_repository.dart';
 import 'package:client/features/auth/view/pages/login_page.dart';
-import 'package:client/features/auth/view/widgets/client/lib/features/auth/view/widgets/auth_gradient_button.dart';
-import 'package:client/features/auth/view/widgets/custom_feild.dart';
+import 'package:client/features/auth/view/widgets/custom_field.dart';
 import 'package:flutter/material.dart';
+import 'package:fpdart/fpdart.dart' hide State;
+import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -44,21 +45,21 @@ class _SignupPageState extends State<SignupPage> {
               const SizedBox(
                 height: 30,
               ),
-              CustomFeild(
+              CustomField(
                 hintText: 'Name',
                 controller: nameController,
               ),
               const SizedBox(
                 height: 15,
               ),
-              CustomFeild(
+              CustomField(
                 hintText: 'Email',
                 controller: emailController,
               ),
               const SizedBox(
                 height: 15,
               ),
-              CustomFeild(
+              CustomField(
                 hintText: 'Password',
                 controller: passwordController,
                 isObscrureText: true,
@@ -69,10 +70,15 @@ class _SignupPageState extends State<SignupPage> {
               AuthGradientButton(
                 buttonText: 'Sign Up',
                 onTap: () async {
-                  await AuthRemoteRepository().signup(
+                  final res = await AuthRemoteRepository().signup(
                       name: nameController.text,
                       email: emailController.text,
                       password: passwordController.text);
+                  final val = switch (res) {
+                    Left(value: final l) => l,
+                    Right(value: final r) => r.toString(),
+                  };
+                  print(val);
                 },
               ),
               const SizedBox(
