@@ -1,19 +1,19 @@
 import 'package:client/core/theme/app_pallete.dart';
-import 'package:client/features/auth/repositories/auth_remote_repository.dart';
 import 'package:client/features/auth/view/pages/login_page.dart';
 import 'package:client/features/auth/view/widgets/custom_field.dart';
+import 'package:client/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:fpdart/fpdart.dart' hide State;
 import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class SignupPage extends StatefulWidget {
+class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  ConsumerState<SignupPage> createState() => _SignupPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _SignupPageState extends ConsumerState<SignupPage> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
@@ -29,6 +29,8 @@ class _SignupPageState extends State<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
+    final val = ref.watch(authViewmodelProvider);
+    print(val);
     return Scaffold(
       appBar: AppBar(),
       body: Padding(
@@ -68,19 +70,16 @@ class _SignupPageState extends State<SignupPage> {
                 height: 20,
               ),
               AuthGradientButton(
-                buttonText: 'Sign Up',
-                onTap: () async {
-                  final res = await AuthRemoteRepository().signup(
-                      name: nameController.text,
-                      email: emailController.text,
-                      password: passwordController.text);
-                  final val = switch (res) {
-                    Left(value: final l) => l,
-                    Right(value: final r) => r.toString(),
-                  };
-                  print(val);
-                },
-              ),
+                  buttonText: 'Sign Up',
+                  onTap: () async {
+                    // for not entring an empty section
+                    if (formKey.currentState!.validate()) {
+                      await ref.read(authViewmodelProvider.notifier).signUpUser(
+                          name: nameController.text,
+                          email: emailController.text,
+                          password: passwordController.text);
+                    }
+                  }),
               const SizedBox(
                 height: 20,
               ),
