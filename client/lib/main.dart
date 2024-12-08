@@ -1,12 +1,18 @@
 import 'package:client/core/theme/theme.dart';
 import 'package:client/features/auth/view/pages/login_page.dart';
 import 'package:client/features/auth/view/pages/signup_page.dart';
+import 'package:client/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // this container created to be able to use init function here on main.dart
+  final container = ProviderContainer();
+  await container.read(authViewmodelProvider.notifier).initSharedPreferences();
   runApp(
-    ProviderScope(
+    UncontrolledProviderScope(
+      container: container,
       child: const MyApp(),
     ),
   );

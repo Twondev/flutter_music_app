@@ -21,6 +21,11 @@ class AuthViewmodel extends _$AuthViewmodel {
     return null;
   }
 
+// init function have to be called here for the repository to interact with the view
+  Future<void> initSharedPreferences() async {
+    await _authLocalRepository.init();
+  }
+
   Future<void> signUpUser({
     required String name,
     required String email,
@@ -56,8 +61,22 @@ class AuthViewmodel extends _$AuthViewmodel {
           l.message,
           StackTrace.current,
         ),
-      Right(value: final r) => state = AsyncValue.data(r),
+      Right(value: final r) => _loginSuccess(r),
     };
     print(val);
+  }
+
+  AsyncValue<UserModel>? _loginSuccess(UserModel user) {
+    _authLocalRepository.setToken(user.token);
+    return state = AsyncValue.data(user);
+  }
+
+  // this one is to check token from local auth repo and verify it on the server if the token is valid them the request to get id and password ... is going to happen
+  Future<UserModel?> getData() async {
+    state = const AsyncValue.loading();
+    final token = _authLocalRepository.getToken();
+    if (token != null) {
+      // send request to the server to get data
+    }
   }
 }

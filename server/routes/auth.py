@@ -1,6 +1,6 @@
 import uuid
 import bcrypt
-from fastapi import HTTPException
+from fastapi import HTTPException, Header
 from fastapi.params import Depends
 from database import get_db
 from models.user import User
@@ -46,6 +46,24 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
     if not is_match:
         raise HTTPException(400, 'incorrect password')
 
-    token = jwt.encode({'id': user_db.id}, 'password key', algorithm='HS256')
+    token = jwt.encode({'id': user_db.id}, 'password_key', algorithm='HS256')
     print("Generated token:", token)
     return {'token': token, 'user': user_db}
+# to get the user data
+
+
+@router.get('/')
+def current_user_data(db: Session = Depends(get_db), x_auth_token=Header()):
+    # get the user token from the header
+    if not x_auth_token:
+        raise HTTPException(401, 'User with this email does not exist!')
+    # decode the token
+    verified_token = jwt.decode(
+        x_auth_token, 'password_key', algorithms=['HS256'])
+    if not verified_token:
+        raise HTTPException(401, 'token verification failed')
+
+    # get the id from the token
+    uid = verified_token.get('id')
+    return uid
+    # postgress database  get the user infos

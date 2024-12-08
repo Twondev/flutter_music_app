@@ -28,6 +28,7 @@ class AuthRemoteRepository {
         headers: {'content-type': 'application/json'},
         body: jsonEncode({'name': name, 'email': email, 'password': password}),
       );
+
       final resBodyMap = jsonDecode(response.body) as Map<String, dynamic>;
       if (response.statusCode != 201) {
         return Left(AppFailure(resBodyMap['detail']));
@@ -52,14 +53,17 @@ class AuthRemoteRepository {
         headers: {'content-type': 'application/json'},
         body: jsonEncode({'email': email, 'password': password}),
       );
-      final resBodyMap = jsonDecode(response.body) as Map<String, dynamic>;
 
+      final resBodyMap = jsonDecode(response.body) as Map<String, dynamic>;
+      // print('User Map: ${resBodyMap['user']}');
       if (response.statusCode != 200) {
         return Left(
           AppFailure(resBodyMap['detail']),
         );
       }
-      return Right(UserModel.fromMap(resBodyMap));
+      return Right(UserModel.fromMap(resBodyMap['user']).copyWith(
+        token: resBodyMap['token'],
+      ));
     } catch (e) {
       return Left(AppFailure(e.toString()));
     }
