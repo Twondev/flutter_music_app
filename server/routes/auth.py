@@ -3,6 +3,7 @@ import bcrypt
 from fastapi import HTTPException, Header
 from fastapi.params import Depends
 from database import get_db
+from middleware.auth_middleware import auth_middleware
 from models.user import User
 from fastapi import APIRouter
 from pydantic_schemas.user_create import UserCreate
@@ -53,17 +54,9 @@ def login_user(user: UserLogin, db: Session = Depends(get_db)):
 
 
 @router.get('/')
-def current_user_data(db: Session = Depends(get_db), x_auth_token=Header()):
-    # get the user token from the header
-    if not x_auth_token:
-        raise HTTPException(401, 'User with this email does not exist!')
-    # decode the token
-    verified_token = jwt.decode(
-        x_auth_token, 'password_key', algorithms=['HS256'])
-    if not verified_token:
-        raise HTTPException(401, 'token verification failed')
-
-    # get the id from the token
-    uid = verified_token.get('id')
-    return uid
-    # postgress database  get the user infos
+def current_user_data(db: Session = Depends(get_db),
+                      user_dict=Depends(auth_middleware)):
+    user = db.query(User).filter(User.id == user_dict['uid']).first()
+    if not user:
+        raise HTTPException(404, 'User not found!')
+    return user
