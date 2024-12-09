@@ -1,3 +1,4 @@
+import 'package:client/core/providers/current_user_notifier.dart';
 import 'package:client/features/auth/model/user_model.dart';
 import 'package:client/features/auth/repositories/auth_local_repository.dart';
 import 'package:client/features/auth/repositories/auth_remote_repository.dart';
@@ -10,6 +11,7 @@ part 'auth_viewmodel.g.dart';
 class AuthViewmodel extends _$AuthViewmodel {
   late AuthRemoteRepository _authRemoteRepository;
   late AuthLocalRepository _authLocalRepository;
+  late CurrentUserNotifier _currentUserNotifier;
 
   // Don’t repeat yourself: Only one AuthRemoteRepository exists in your app. thats why i used riverpod to use authremoterepository one time and re use it without repeatation
   //It simplifies your app by managing and sharing the AuthRemoteRepository, so you don’t need to manually create it every time.
@@ -18,6 +20,7 @@ class AuthViewmodel extends _$AuthViewmodel {
   AsyncValue<UserModel>? build() {
     _authRemoteRepository = ref.watch(authRemoteRepositoryProvider);
     _authLocalRepository = ref.watch(authLocalRepositoryProvider);
+    _currentUserNotifier = ref.watch(currentUserNotifierProvider.notifier);
     return null;
   }
 
@@ -37,6 +40,7 @@ class AuthViewmodel extends _$AuthViewmodel {
       email: email,
       password: password,
     );
+
     final val = switch (res) {
       Left(value: final l) => state = AsyncValue.error(
           l.message,
@@ -68,6 +72,7 @@ class AuthViewmodel extends _$AuthViewmodel {
 
   AsyncValue<UserModel>? _loginSuccess(UserModel user) {
     _authLocalRepository.setToken(user.token);
+    _currentUserNotifier.addUser(user);
     return state = AsyncValue.data(user);
   }
 
@@ -77,6 +82,21 @@ class AuthViewmodel extends _$AuthViewmodel {
     final token = _authLocalRepository.getToken();
     if (token != null) {
       // send request to the server to get data
+      final res = await _authRemoteRepository.getUserCurrentDAta(token);
+      final val = switch (res) {
+        Left(value: final l) => state = AsyncValue.error(
+            l.message,
+            StackTrace.current,
+          ),
+        Right(value: final r) => _getDataSuccess(r),
+      };
+      return val.value;
     }
+    return null;
+  }
+
+  AsyncValue<UserModel> _getDataSuccess(UserModel user) {
+    _currentUserNotifier.addUser(user);
+    return state = AsyncValue.data(user);
   }
 }

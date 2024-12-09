@@ -3,8 +3,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 part 'auth_local_repository.g.dart';
 
-// to create an instance of a func
-@riverpod
+// to create an instance of a func this one @Riverpod() is to create a single one instance
+@Riverpod(keepAlive: true)
 AuthLocalRepository authLocalRepository(Ref ref) {
   return AuthLocalRepository();
 }
