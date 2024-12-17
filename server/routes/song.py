@@ -27,9 +27,9 @@ def upload_song(song: UploadFile = File(...), thumbnail: UploadFile = File(...),
                 hex_code: str = Form(...),
                 db: Session = Depends(get_db),
                 auth_dict=Depends(auth_middleware)):
-    print(f"Song filename: {song.filename}")
-    print(f"Song content type: {song.content_type}")
-    print(f"Song file size: {song.file}")
+    # print(f"Song filename: {song.filename}")
+    # print(f"Song content type: {song.content_type}")
+    # print(f"Song file size: {song.file}")
     song_id = str(uuid.uuid4())
     song_res = cloudinary.uploader.upload(
         song.file, resource_type='video', folder=f'songs/{song_id}')
