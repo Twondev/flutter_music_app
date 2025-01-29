@@ -2,10 +2,10 @@ import 'package:client/core/theme/app_pallete.dart';
 import 'package:client/core/utils.dart';
 import 'package:client/core/widgets/loader.dart';
 import 'package:client/features/auth/view/pages/login_page.dart';
+import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:client/core/widgets/custom_field.dart';
 import 'package:client/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:client/features/auth/view/widgets/auth_gradient_button.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class SignupPage extends ConsumerStatefulWidget {
@@ -20,9 +20,9 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+
   @override
   void dispose() {
-    // TODO: implement dispose
     nameController.dispose();
     emailController.dispose();
     passwordController.dispose();
@@ -31,19 +31,18 @@ class _SignupPageState extends ConsumerState<SignupPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(
-      authViewmodelProvider.select(
-        (val) => val?.isLoading == true,
-      ),
-    );
-    // the part that changes pages from signup to login
+    final isLoading = ref
+        .watch(authViewModelProvider.select((val) => val?.isLoading == true));
+
     ref.listen(
-      authViewmodelProvider,
+      authViewModelProvider,
       (_, next) {
         next?.when(
           data: (data) {
             showSnackBar(
-                context, 'Account created successfully! Please login.');
+              context,
+              'Account created successfully! Please  login.',
+            );
             Navigator.push(
               context,
               MaterialPageRoute(
@@ -72,52 +71,45 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                   children: [
                     const Text(
                       'Sign Up.',
-                      style:
-                          TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 50,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    const SizedBox(
-                      height: 30,
-                    ),
+                    const SizedBox(height: 30),
                     CustomField(
                       hintText: 'Name',
                       controller: nameController,
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const SizedBox(height: 15),
                     CustomField(
                       hintText: 'Email',
                       controller: emailController,
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const SizedBox(height: 15),
                     CustomField(
                       hintText: 'Password',
                       controller: passwordController,
-                      isObscrureText: true,
+                      isObscureText: true,
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                     AuthGradientButton(
-                        buttonText: 'Sign Up',
-                        onTap: () async {
-                          // for not entring an empty section
-                          if (formKey.currentState!.validate()) {
-                            await ref
-                                .read(authViewmodelProvider.notifier)
-                                .signUpUser(
-                                    name: nameController.text,
-                                    email: emailController.text,
-                                    password: passwordController.text);
-                          } else {
-                            showSnackBar(context, 'missing field');
-                          }
-                        }),
-                    const SizedBox(
-                      height: 20,
+                      buttonText: 'Sign up',
+                      onTap: () async {
+                        if (formKey.currentState!.validate()) {
+                          await ref
+                              .read(authViewModelProvider.notifier)
+                              .signUpUser(
+                                name: nameController.text,
+                                email: emailController.text,
+                                password: passwordController.text,
+                              );
+                        } else {
+                          showSnackBar(context, 'Missing fields!');
+                        }
+                      },
                     ),
+                    const SizedBox(height: 20),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
@@ -128,17 +120,20 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         );
                       },
                       child: RichText(
-                          text: TextSpan(
-                        text: 'Already have an account? ',
-                        style: Theme.of(context).textTheme.titleMedium,
-                        children: const [
-                          TextSpan(
-                              text: 'Sign in',
+                        text: TextSpan(
+                          text: 'Already have an account? ',
+                          style: Theme.of(context).textTheme.titleMedium,
+                          children: const [
+                            TextSpan(
+                              text: 'Sign In',
                               style: TextStyle(
-                                  color: Pallete.gradient2,
-                                  fontWeight: FontWeight.bold)),
-                        ],
-                      )),
+                                color: Pallete.gradient2,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     )
                   ],
                 ),

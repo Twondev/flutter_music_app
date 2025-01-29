@@ -17,14 +17,12 @@ class LoginPage extends ConsumerStatefulWidget {
 }
 
 class _LoginPageState extends ConsumerState<LoginPage> {
-  final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final formKey = GlobalKey<FormState>();
+
   @override
   void dispose() {
-    // TODO: implement dispose
-
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
@@ -32,17 +30,14 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoading = ref.watch(
-      authViewmodelProvider.select(
-        (val) => val?.isLoading == true,
-      ),
-    );
+    final isLoading = ref
+        .watch(authViewModelProvider.select((val) => val?.isLoading == true));
+
     ref.listen(
-      authViewmodelProvider,
+      authViewModelProvider,
       (_, next) {
         next?.when(
           data: (data) {
-            // to navigate to a home page
             Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(
@@ -72,47 +67,40 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   children: [
                     const Text(
                       'Sign In.',
-                      style:
-                          TextStyle(fontSize: 50, fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontSize: 50,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    const SizedBox(
-                      height: 30,
-                    ),
+                    const SizedBox(height: 30),
                     CustomField(
                       hintText: 'Email',
                       controller: emailController,
                     ),
-                    const SizedBox(
-                      height: 15,
-                    ),
+                    const SizedBox(height: 15),
                     CustomField(
                       hintText: 'Password',
                       controller: passwordController,
-                      isObscrureText: true,
+                      isObscureText: true,
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                     AuthGradientButton(
-                      buttonText: 'Sign In',
+                      buttonText: 'Sign in',
                       onTap: () async {
                         if (formKey.currentState!.validate()) {
                           await ref
-                              .read(authViewmodelProvider.notifier)
+                              .read(authViewModelProvider.notifier)
                               .loginUser(
                                 email: emailController.text,
                                 password: passwordController.text,
                               );
                         } else {
-                          showSnackBar(context, 'missing field');
+                          showSnackBar(context, 'Missing fields!');
                         }
                       },
                     ),
-                    const SizedBox(
-                      height: 20,
-                    ),
+                    const SizedBox(height: 20),
                     GestureDetector(
-                      // for the button to listen and react
                       onTap: () {
                         Navigator.push(
                           context,
@@ -122,17 +110,20 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         );
                       },
                       child: RichText(
-                          text: TextSpan(
-                        text: 'don\'t have an account? ',
-                        style: Theme.of(context).textTheme.titleMedium,
-                        children: const [
-                          TextSpan(
+                        text: TextSpan(
+                          text: 'Don\'t have an account? ',
+                          style: Theme.of(context).textTheme.titleMedium,
+                          children: const [
+                            TextSpan(
                               text: 'Sign Up',
                               style: TextStyle(
-                                  color: Pallete.gradient2,
-                                  fontWeight: FontWeight.bold)),
-                        ],
-                      )),
+                                color: Pallete.gradient2,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     )
                   ],
                 ),

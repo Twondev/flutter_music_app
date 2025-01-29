@@ -1,5 +1,5 @@
 import 'package:client/core/providers/current_user_notifier.dart';
-import 'package:client/features/auth/model/user_model.dart';
+import 'package:client/core/models/user_model.dart';
 import 'package:client/features/auth/repositories/auth_local_repository.dart';
 import 'package:client/features/auth/repositories/auth_remote_repository.dart';
 import 'package:fpdart/fpdart.dart';
@@ -8,14 +8,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'auth_viewmodel.g.dart';
 
 @riverpod
-class AuthViewmodel extends _$AuthViewmodel {
+class AuthViewModel extends _$AuthViewModel {
   late AuthRemoteRepository _authRemoteRepository;
   late AuthLocalRepository _authLocalRepository;
   late CurrentUserNotifier _currentUserNotifier;
 
-  // Don’t repeat yourself: Only one AuthRemoteRepository exists in your app. thats why i used riverpod to use authremoterepository one time and re use it without repeatation
-  //It simplifies your app by managing and sharing the AuthRemoteRepository, so you don’t need to manually create it every time.
-  //"Hey, Riverpod! Give me the ready-to-use AuthRemoteRepository so I can use it here to handle authentication tasks."
   @override
   AsyncValue<UserModel>? build() {
     _authRemoteRepository = ref.watch(authRemoteRepositoryProvider);
@@ -24,7 +21,6 @@ class AuthViewmodel extends _$AuthViewmodel {
     return null;
   }
 
-// init function have to be called here for the repository to interact with the view
   Future<void> initSharedPreferences() async {
     await _authLocalRepository.init();
   }
@@ -60,6 +56,7 @@ class AuthViewmodel extends _$AuthViewmodel {
       email: email,
       password: password,
     );
+
     final val = switch (res) {
       Left(value: final l) => state = AsyncValue.error(
           l.message,
@@ -76,13 +73,12 @@ class AuthViewmodel extends _$AuthViewmodel {
     return state = AsyncValue.data(user);
   }
 
-  // this one is to check token from local auth repo and verify it on the server if the token is valid them the request to get id and password ... is going to happen
   Future<UserModel?> getData() async {
     state = const AsyncValue.loading();
     final token = _authLocalRepository.getToken();
+
     if (token != null) {
-      // send request to the server to get data
-      final res = await _authRemoteRepository.getUserCurrentDAta(token);
+      final res = await _authRemoteRepository.getCurrentUserData(token);
       final val = switch (res) {
         Left(value: final l) => state = AsyncValue.error(
             l.message,
@@ -90,8 +86,10 @@ class AuthViewmodel extends _$AuthViewmodel {
           ),
         Right(value: final r) => _getDataSuccess(r),
       };
+
       return val.value;
     }
+
     return null;
   }
 

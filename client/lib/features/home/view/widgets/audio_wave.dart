@@ -15,7 +15,6 @@ class _AudioWaveState extends State<AudioWave> {
   final PlayerController playerController = PlayerController();
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     initAudioPlayer();
   }
@@ -37,7 +36,6 @@ class _AudioWaveState extends State<AudioWave> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     playerController.dispose();
   }
